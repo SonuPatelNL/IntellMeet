@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: intellmeet-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - host: intellmeet.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: intellmeet-backend
+                port:
+                  number: 4000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: intellmeet-frontend
+                port:
+                  number: 80
+  # TLS can be configured by creating a Kubernetes TLS secret named `intellmeet-tls`
+  # tls:
+  #   - hosts:
+  #       - intellmeet.local
+  #     secretName: intellmeet-tls
