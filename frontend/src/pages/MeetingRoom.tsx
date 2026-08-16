@@ -1,36 +1,86 @@
+import { useParams, useNavigate } from "react-router-dom"
 import { useWebRTC } from "../hooks/useWebRTC"
-import { useParams } from "react-router-dom"
+import { useEffect } from "react"
 
 export default function MeetingRoom() {
-  const { roomId } = useParams()
-  const { localStream, toggleMute, toggleVideo, startScreenShare, isMuted, isVideoOff } = useWebRTC(roomId!)
+  const { meetingId } = useParams()
+  const navigate = useNavigate()
+
+  // SAFETY CHECK - this was crashing your app
+  if (!meetingId) {
+    return (
+      <div style={{padding: '40px', textAlign: 'center'}}>
+        <h2>No Meeting ID Found</h2>
+        <p>Please go back and click "Create Meeting"</p>
+        <button 
+          onClick={() => navigate('/')} 
+          style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer'}}
+        >
+          Go to Home
+        </button>
+      </div>
+    )
+  }
+
+  const { 
+    localVideoRef, 
+    remoteVideos, 
+    isConnected, 
+    joinRoom,
+    leaveRoom 
+  } = useWebRTC()
+
+  useEffect(() => {
+    // Join the room when component loads
+    joinRoom(meetingId)
+
+    // Leave room when component unmounts
+    return () => {
+      leaveRoom()
+    }
+  }, [meetingId, joinRoom, leaveRoom])
+
+  if (!isConnected) {
+    return <div style={{padding: '40px', textAlign: 'center'}}>Connecting to meeting {meetingId}...</div>
+  }
 
   return (
-    <div style={{ padding: '20px', background: '#0a0a0a', minHeight: '100vh', color: 'white', display: 'flex', flexDirection: 'column' }}>
+    <div style={{padding: '20px'}}>
+      <h1>Meeting Room: {meetingId}</h1>
       
-      <h1 style={{ textAlign: 'center', color: '#00ff00' }}>Room: {roomId}</h1>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', flex: 1 }}>
-        <div style={{ border: '2px solid #00ff00', borderRadius: '10px', overflow: 'hidden', background: 'black' }}>
-          <video ref={(el) => el && (el.srcObject = localStream)} autoPlay muted playsInline style={{ width: '100%', background: 'black', borderRadius: '8px' }} />
+      <div style={{display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '20px'}}>
+        {/* Your Video */}
+        <div>
+          <h3>You</h3>
+          <video 
+            ref={localVideoRef} 
+            autoPlay 
+            muted 
+            playsInline 
+            style={{width: '300px', height: '200px', background: 'black', borderRadius: '8px'}}
+          />
         </div>
-        {[...Array.from(useWebRTC(roomId!).peers.entries())].map(([id, stream]) => (
-          <video key={id} ref={(el) => el && (el.srcObject = stream)} autoPlay playsInline style={{ width: '100%', background: 'black', borderRadius: '8px' }} />
+
+        {/* Other Participants */}
+        {remoteVideos.map((video) => (
+          <div key={video.id}>
+            <h3>{video.userName || 'Participant'}</h3>
+            <video 
+              ref={video.ref} 
+              autoPlay 
+              playsInline 
+              style={{width: '300px', height: '200px', background: 'black', borderRadius: '8px'}}
+            />
+          </div>
         ))}
       </div>
 
-      {/* BUTTONS NOW AT BOTTOM NORMALLY - NO MORE FIXED */}
-      <div style={{ display: 'flex', gap: '20px', padding: '20px', background: '#222', borderRadius: '10px', justifyContent: 'center', marginTop: '20px' }}>
-        <button onClick={toggleMute} style={{ fontSize: '24px', padding: '15px 20px', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isMuted ? 'red' : '#444', color: 'white' }}>
-          {isMuted ? '🔇' : '🎤'}
-        </button>
-        <button onClick={toggleVideo} style={{ fontSize: '24px', padding: '15px 20px', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isVideoOff ? 'red' : '#444', color: 'white' }}>
-          {isVideoOff ? '📷' : '📹'}
-        </button>
-        <button onClick={startScreenShare} style={{ fontSize: '24px', padding: '15px 20px', borderRadius: '50%', border: 'none', cursor: 'pointer', background: '#444', color: 'white' }}>
-          🖥️
-        </button>
-      </div>
+      <button 
+        onClick={() => navigate('/')} 
+        style={{padding: '10px 20px', marginTop: '20px', background: 'red', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer'}}
+      >
+        Leave Meeting
+      </button>
     </div>
   )
 }
