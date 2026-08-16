@@ -1,0 +1,14 @@
+export const API_BASE_URL = 'http://localhost:5176';
+
+export async function healthCheck(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      mode: 'cors'  // <-- add the 'r' here
+    });
+    console.log('Fetching', `${API_BASE_URL}/health`);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
