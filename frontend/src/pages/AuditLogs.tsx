@@ -1,6 +1,12 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { getAuditLogs } from "@/services/auditLogs.api"
+
+const getAuditLogs = async (params: {user?: string, action?: string}) => {
+  const query = new URLSearchParams(params as any).toString()
+  const res = await fetch(`/api/audit-logs?${query}`)
+  if (!res.ok) throw new Error("Failed to fetch")
+  return res.json()
+}
 
 export default function AuditLogs() {
   const [user, setUser] = useState<string>("")
@@ -18,21 +24,21 @@ export default function AuditLogs() {
   const logsData = logs?.data || []
 
   return (
-    <div className="space-y-6 p-4">
-      <h1 className="text-3xl font-bold">Audit Logs</h1>
+    <div style={{padding: '20px'}}>
+      <h1 style={{fontSize: '24px', fontWeight: 'bold', marginBottom: '20px'}}>Audit Logs</h1>
       
-      <div className="flex flex-wrap gap-3 items-center">
+      <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
         <input
           placeholder="Search by user..."
           value={user}
           onChange={(e) => setUser(e.target.value)}
-          className="w-[250px] h-10 px-3 rounded-md border bg-background"
+          style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
         />
         
         <select 
           value={actionFilter} 
           onChange={(e) => setActionFilter(e.target.value)}
-          className="w-[200px] h-10 px-3 rounded-md border bg-background"
+          style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
         >
           <option value="">All actions</option>
           <option value="login">Login</option>
@@ -40,29 +46,33 @@ export default function AuditLogs() {
           <option value="password_change">Password Change</option>
           <option value="meeting_create">Meeting Create</option>
           <option value="member_invite">Member Invite</option>
-          <option value="member_remove">Member Remove</option>
-          <option value="member_role_update">Member Role Update</option>
         </select>
 
-        <button type="button" onClick={() => refetch()} className="px-4 py-2 bg-black text-white rounded-md">
+        <button onClick={() => refetch()} style={{padding: '8px 16px', background: 'black', color: 'white', border: 'none', borderRadius: '4px'}}>
           Refresh
         </button>
       </div>
 
-      <table className="w-full text-sm">
-        <thead><tr><th>Date</th><th>User</th><th>Action</th><th>Details</th></tr></thead>
-        <tbody>
-          {isLoading? <tr><td colSpan={4}>Loading...</td></tr> : 
-          logsData.map((log: any) => (
-            <tr key={log.id}>
-              <td>{formatDate(log.createdAt)}</td>
-              <td>{log.user?.email || 'System'}</td>
-              <td>{log.action}</td>
-              <td>{log.details || '-'}</td>
+      {isLoading ? <p>Loading...</p> : (
+        <table style={{width: '100%', borderCollapse: 'collapse'}}>
+          <thead>
+            <tr>
+              <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Date</th>
+              <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>User</th>
+              <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {logsData.map((log: any) => (
+              <tr key={log.id}>
+                <td style={{border: '1px solid #ddd', padding: '8px'}}>{formatDate(log.createdAt)}</td>
+                <td style={{border: '1px solid #ddd', padding: '8px'}}>{log.user?.email || 'System'}</td>
+                <td style={{border: '1px solid #ddd', padding: '8px'}}>{log.action}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   )
 }
