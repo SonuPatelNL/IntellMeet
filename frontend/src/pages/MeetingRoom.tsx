@@ -1,4 +1,4 @@
-import useWebRTC from "../hooks/useWebRTC"
+import { useWebRTC } from "../hooks/useWebRTC"
 import { useParams } from "react-router-dom"
 
 export default function MeetingRoom() {
