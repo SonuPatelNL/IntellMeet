@@ -1,9 +1,6 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { getAuditLogs } from "@/services/auditLogs.api"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function AuditLogs() {
   const [user, setUser] = useState<string>("")
@@ -13,95 +10,59 @@ export default function AuditLogs() {
     queryKey: ["auditLogs", user, actionFilter],
     queryFn: () => getAuditLogs({ 
       user: user || undefined, 
-      action: actionFilter || undefined // Fixed: no.filter here
+      action: actionFilter || undefined
     }),
   })
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleString()
-  }
-
+  const formatDate = (date: string) => new Date(date).toLocaleString()
   const logsData = logs?.data || []
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Audit Logs</h1>
-        <p className="text-sm text-slate-400">Track login, logout, password changes, meeting creation, and member updates</p>
-      </div>
-
-      {/* Filters */}
+    <div className="space-y-6 p-4">
+      <h1 className="text-3xl font-bold">Audit Logs</h1>
+      
       <div className="flex flex-wrap gap-3 items-center">
-        <Input
+        <input
           placeholder="Search by user..."
           value={user}
           onChange={(e) => setUser(e.target.value)}
-          className="w-[250px]"
+          className="w-[250px] h-10 px-3 rounded-md border bg-background"
         />
         
-        <Select value={actionFilter} onValueChange={(value) => setActionFilter(value)}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="All actions" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All actions</SelectItem>
-            <SelectItem value="login">Login</SelectItem>
-            <SelectItem value="logout">Logout</SelectItem>
-            <SelectItem value="password_change">Password Change</SelectItem>
-            <SelectItem value="meeting_create">Meeting Create</SelectItem>
-            <SelectItem value="member_invite">Member Invite</SelectItem>
-            <SelectItem value="member_remove">Member Remove</SelectItem>
-            <SelectItem value="member_role_update">Member Role Update</SelectItem>
-          </SelectContent>
-        </Select>
+        <select 
+          value={actionFilter} 
+          onChange={(e) => setActionFilter(e.target.value)}
+          className="w-[200px] h-10 px-3 rounded-md border bg-background"
+        >
+          <option value="">All actions</option>
+          <option value="login">Login</option>
+          <option value="logout">Logout</option>
+          <option value="password_change">Password Change</option>
+          <option value="meeting_create">Meeting Create</option>
+          <option value="member_invite">Member Invite</option>
+          <option value="member_remove">Member Remove</option>
+          <option value="member_role_update">Member Role Update</option>
+        </select>
 
-        <Button type="button" onClick={() => refetch()} className="bg-primary text-white">
+        <button type="button" onClick={() => refetch()} className="px-4 py-2 bg-black text-white rounded-md">
           Refresh
-        </Button>
+        </button>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border-separate border-spacing-0 text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="text-left p-3 font-medium">Date</th>
-              <th className="text-left p-3 font-medium">User</th>
-              <th className="text-left p-3 font-medium">Action</th>
-              <th className="text-left p-3 font-medium">Details</th>
+      <table className="w-full text-sm">
+        <thead><tr><th>Date</th><th>User</th><th>Action</th><th>Details</th></tr></thead>
+        <tbody>
+          {isLoading? <tr><td colSpan={4}>Loading...</td></tr> : 
+          logsData.map((log: any) => (
+            <tr key={log.id}>
+              <td>{formatDate(log.createdAt)}</td>
+              <td>{log.user?.email || 'System'}</td>
+              <td>{log.action}</td>
+              <td>{log.details || '-'}</td>
             </tr>
-          </thead>
-          <tbody>
-            {isLoading? (
-              <tr>
-                <td colSpan={4} className="text-center p-8 text-slate-500">
-                  Loading logs...
-                </td>
-              </tr>
-            ) : logsData.length === 0? (
-              <tr>
-                <td colSpan={4} className="text-center p-8 text-slate-500">
-                  No audit logs found
-                </td>
-              </tr>
-            ) : (
-              logsData.map((log: any) => (
-                <tr key={log.id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
-                  <td className="p-3">{formatDate(log.createdAt)}</td>
-                  <td className="p-3">{log.user?.email || 'System'}</td>
-                  <td className="p-3">
-                    <span className="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs">
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="p-3">{log.details || '-'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
-
