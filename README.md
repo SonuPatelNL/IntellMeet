@@ -22,7 +22,7 @@ git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
 
 ## ⚡ Installation
-———————————————————————
+
 ### Install Dependencies
 ```bash
 **Install backend deps
