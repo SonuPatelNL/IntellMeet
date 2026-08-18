@@ -16,13 +16,13 @@ IntellMeet is a real-time video conferencing and collaboration platform built fo
 **AI:** OpenAI API  
 
 ## ⚙️ Setup Instructions
-### 1. Clone Repository
+### Clone Repository
 ```bash
 git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
 
-⚡ Installation
-### 1. Install Dependencies
+## ⚡ Installation
+Install Dependencies
 ```bash
 • Install backend deps
 cd server
@@ -32,17 +32,17 @@ npm install
 cd ../client
 npm install
 
-🗝️ Environment Setup
+## 🗝️ Environment Setup
 Create .env in server folder:
 MONGO_URI=your_mongodb_url
 OPENAI_API_KEY=your_key
 PORT=5000
 
-🛜 API DOCS
+## 🛜 API DOCS
 Base URL: http://localhost:5000/api
 Content-Type: application/json
 
-🌱 Seeding Demo Data
+## 🌱 Seeding Demo Data
 To add sample users and meetings for testing:
 cd server
 npm run seed
@@ -50,7 +50,7 @@ This will create:
 • Demo Room: demo123
 • Test User: test@example.com / password: 123456
 
-🚀 Deployment
+## 🚀 Deployment
 Frontend - Vercel
 • Push code to GitHub
 • Import project in Vercel
@@ -64,10 +64,10 @@ Backend- Render / Railway
 • Start: npm start
 • Add MongoDB Atlas + OpenAI keys in Environment
 
-📸 Screenshots
+## 📸 Screenshots
 Add screenshots in /screenshots folder
 
-🗺️ Future Roadmap
+## 🗺️ Future Roadmap
 - [ ] **AI Features**: Live transcription, Action items, Sentiment analysis
 - [ ] **Collaboration**: Meeting recording, File sharing in chat, Polls
 - [ ] **Security**: E2E Encryption, Meeting passwords, Waiting room
@@ -75,7 +75,7 @@ Add screenshots in /screenshots folder
 - [ ] **Integrations**: Google Meet import, Slack bot, Calendar sync
 - [ ] **Deployment**: Docker support, TURN server for global users
 
-🤝 Contributing
+## 🤝 Contributing
 Contributions are what make the open source community amazing!
 • Fork the Project
 • Create your Feature Branch (git checkout -b feature/AmazingFeature)
@@ -83,7 +83,7 @@ Contributions are what make the open source community amazing!
 • Push to the Branch (git push origin feature/AmazingFeature)
 • Open a Pull Request
 
-📜 LICENSE
+## 📜 LICENSE
 See LICENSE file
 
 
