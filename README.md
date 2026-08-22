@@ -21,16 +21,10 @@ IntellMeet is a real-time video conferencing and collaboration platform built fo
 git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
 
-## ⚡Installation
+## ⚡**Installation**
 ### Install dependencies 
 ```bash
-# Install backend deps
-cd server
-npm install
-
-# Install frontend deps
-cd../client
-npm install
-
+cd server && npm install
+cd../client && npm install
 
 
