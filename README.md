@@ -23,7 +23,6 @@ cd IntellMeet
 ```
 
 ## Installation
-
 ```bash
 git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
@@ -40,6 +39,15 @@ npm install
 npm run dev
 ```
 
-Environment Variables
+## Environment Setup
+Create a .env file in /server and /client
+/server/.env
+PORT=5000
+MONGO_URL=mongodb://localhost:27017/intellmeet
+JWT_SECRET=your_jwt_secret
+OPENAI_API_KEY=sk-your-openai-key
+CORS_ORIGIN=http://localhost:5176
 
-
+/client/.env
+VITE_SERVER_URL=http://localhost:5000
+VITE_OPENAI_API_KEY=your_openai_key_if_needed_on_frontend
