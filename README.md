@@ -39,9 +39,10 @@ npm install
 npm run dev
 ```
 
-### Environment Setup
-```
+## Environment Setup
+
 Create a .env file in /server and /client
+
 ### /server/.env
 ```env
 PORT=5000
@@ -56,4 +57,62 @@ CORS_ORIGIN=http://localhost:5176
 VITE_SERVER_URL=http://localhost:5000
 VITE_OPENAI_API_KEY=your_openai_key_if_needed_on_frontend
 ```
+
+## Seeding Demo Data
+
+To add simple meetings and users for testing:
 ```
+cd server
+npm run seed
+```
+This will create 2 meeting rooms:
+demo-room-1, demo-room-2 with password 1234 
+
+## API Docs
+
+Base URL: `http://localhost:5000/api`
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| POST | `/auth/register` | Register user |
+| POST | `/auth/login` | Login user |
+| GET | `/meetings` | Get all meetings |
+| POST | `/meetings` | Create meeting |
+| GET | `/meetings/:id` | Get meeting by ID |
+| DELETE | `/meetings/:id` | Delete meeting |
+| POST | `/ai/summarize` | Summarize meeting |
+
+**Auth Header:** `Authorization: Bearer <token>`
+
+## Deployment
+
+### Frontend - Vercel
+- Push code to GuitHub
+- Import project in Vercel
+- Set root directory: /client
+- Add env variables from .env
+
+### Backend - Render / Railway
+- Import /server folder
+- Set Build Command: npm install
+- Start Command: npm start
+- Add MONGO_URL, OPENAI_API_KEY in Environment
+
+## Screenshots
+Add your Screenshots to /screenshots folder
+
+## Future Roadmap
+
+- [ ] Zoom / Google Meet integration
+- [ ] Real-time transcription
+- [ ] Mobile app (React Native)
+- [ ] Team collaboration
+
+## Contributing
+
+Contributions are welcome!
+
+1. Fork this repo
+2. Create new branch
+3. Make your changes
+4. Submit a Pull Request
