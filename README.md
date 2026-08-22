@@ -20,6 +20,7 @@ IntellMeet is a real-time video conferencing and collaboration platform built fo
 ```bash
 git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
+```
 
 ## Installation
 
@@ -37,6 +38,7 @@ npm run dev
 cd ../frontend
 npm install
 npm run dev
+```
 
 Environment Variables
 
