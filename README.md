@@ -22,7 +22,7 @@ git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
 ```
 
-## Installation
+## ⚡Installation
 ```bash
 git clone https://github.com/SonuPatelNL/IntellMeet.git
 cd IntellMeet
@@ -39,7 +39,7 @@ npm install
 npm run dev
 ```
 
-## Environment Setup
+## 🔑 Environment Setup
 
 Create a .env file in /server and /client
 
@@ -58,7 +58,7 @@ VITE_SERVER_URL=http://localhost:5000
 VITE_OPENAI_API_KEY=your_openai_key_if_needed_on_frontend
 ```
 
-## Seeding Demo Data
+## 🌱 Seeding Demo Data
 
 To add simple meetings and users for testing:
 ```
@@ -68,7 +68,7 @@ npm run seed
 This will create 2 meeting rooms:
 demo-room-1, demo-room-2 with password 1234 
 
-## API Docs
+## 📡 API Docs
 
 Base URL: `http://localhost:5000/api`
 
@@ -84,7 +84,7 @@ Base URL: `http://localhost:5000/api`
 
 **Auth Header:** `Authorization: Bearer <token>`
 
-## Deployment
+## 🚀  Deployment
 
 ### Frontend - Vercel
 - Push code to GuitHub
@@ -98,17 +98,17 @@ Base URL: `http://localhost:5000/api`
 - Start Command: npm start
 - Add MONGO_URL, OPENAI_API_KEY in Environment
 
-## Screenshots
+## 📸 Screenshots
 Add your Screenshots to /screenshots folder
 
-## Future Roadmap
+## 🗺️ Future Roadmap
 
 - [ ] Zoom / Google Meet integration
 - [ ] Real-time transcription
 - [ ] Mobile app (React Native)
 - [ ] Team collaboration
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome!
 
@@ -116,3 +116,6 @@ Contributions are welcome!
 2. Create new branch
 3. Make your changes
 4. Submit a Pull Request
+
+## 📜 License
+This project is licensed under the MIT License
