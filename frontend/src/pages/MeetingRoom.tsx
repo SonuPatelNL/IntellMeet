@@ -1,34 +1,34 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useWebRTC } from '../hooks/useWebRTC';
 
 export default function MeetingRoom() {
   const { meetingId } = useParams() as any;
-  const id = meetingId || window.location.pathname.split('/').pop() || 'test-room';
+  const id = meetingId || 'test-room';
   const rtc: any = useWebRTC({ meetingId: id } as any);
-  const localRef = rtc.localVideoRef || useRef(null);
 
-  useEffect(() => {
-    rtc.joinRoom?.(id);
-  }, [id]);
+  useEffect(() => { rtc.joinRoom?.(id); }, [id]);
 
   return (
-    <div style={{padding:20, background:'#0f0f0f', minHeight:'100vh', color:'#fff'}}>
-      <h2>IntelliMeet - Room: {id}</h2>
-      <div style={{display:'flex', gap:10, flexWrap:'wrap'}}>
-        <div style={{width:320, height:240, background:'#000', borderRadius:12, overflow:'hidden'}}>
-          <video ref={localRef} autoPlay muted playsInline style={{width:'100%', height:'100%'}} />
+    <div style={{minHeight:'100vh', background:'#111', color:'#fff', padding:20}}>
+      <h1>IntelliMeet - {id}</h1>
+      <div style={{display:'flex', gap:12, flexWrap:'wrap', marginTop:20}}>
+        <div style={{position:'relative', width:400, height:300, background:'#000', borderRadius:16, overflow:'hidden', border:'2px solid #333'}}>
+          <video ref={rtc.localVideoRef} autoPlay muted playsInline style={{width:'100%', height:'100%', objectFit:'cover'}} />
+          <span style={{position:'absolute', bottom:8, left:8, background:'rgba(0,0,0,0.6)', padding:'4px 8px', borderRadius:6}}>You</span>
         </div>
-        {(Array.from((rtc.remoteVideos as any)?.values?.() || []) as any[]).map((v: any, i: number) => (
-          <video key={i} ref={(el:any)=>{if(el && v) el.srcObject=v}} autoPlay playsInline style={{width:320, height:240, background:'#000', borderRadius:12}} />
+        {Array.from(((rtc as any).remoteVideos?.values?.() || []) as any).map((stream: any, i: number) => (
+          <div key={i} style={{width:400, height:300, background:'#000', borderRadius:16, overflow:'hidden'}}>
+            <video autoPlay playsInline ref={(el:any)=>{if(el && stream) el.srcObject=stream}} style={{width:'100%', height:'100%', objectFit:'cover'}} />
+          </div>
         ))}
       </div>
       <div style={{marginTop:20, display:'flex', gap:10}}>
-        <button onClick={()=>rtc.toggleMute?.()}>Mute</button>
-        <button onClick={()=>rtc.toggleVideo?.()}>Video Off</button>
-        <button onClick={()=>rtc.leaveRoom?.()}>Leave</button>
+        <button onClick={()=>rtc.toggleMute?.()} style={{padding:'10px 20px', borderRadius:20, border:0, background:'#333', color:'#fff'}}>🎤 Mute</button>
+        <button onClick={()=>rtc.toggleVideo?.()} style={{padding:'10px 20px', borderRadius:20, border:0, background:'#333', color:'#fff'}}>📹 Video</button>
+        <button onClick={()=>rtc.leaveRoom?.()} style={{padding:'10px 20px', borderRadius:20, border:0, background:'#e53e3e', color:'#fff'}}>Leave</button>
       </div>
-      <p style={{marginTop:20, opacity:0.6}}>Participants: {rtc.participants?.length || 1}</p>
+      <p style={{marginTop:10, opacity:0.5}}>Open same link in another tab to test 2-person call</p>
     </div>
   );
 }
