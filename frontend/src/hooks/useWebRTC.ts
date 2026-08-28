@@ -28,7 +28,7 @@ export const useWebRTC = ({
   localUserId,
   enableVideo = true,
   enableAudio = true,
-}: UseWebRTCOptions): UseWebRTCReturn => {
+}: UseWebRTCOptions = {} as UseWebRTCOptions): UseWebRTCReturn => {
   const serviceRef = useRef<WebRTCService | null>(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [participants, setParticipants] = useState<Map<string, ParticipantState>>(new Map());
