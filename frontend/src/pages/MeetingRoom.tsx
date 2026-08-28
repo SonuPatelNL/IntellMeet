@@ -18,8 +18,16 @@ export default function MeetingRoom() {
     remoteVideos, 
     isConnected, 
     joinRoom,
-    leaveRoom 
-  } = useWebRTC()
+    leaveRoom,
+    participants,
+  isMuted,
+  isVideoOff,
+  toggleMute,
+  toggleVideo,
+} = useWebRTC({
+  meetingId: displayId,
+} as any);
+  } as any);
 
   useEffect(() => {
     // Join the room when component loads
