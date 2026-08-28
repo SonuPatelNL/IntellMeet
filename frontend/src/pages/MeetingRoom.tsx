@@ -6,20 +6,11 @@ export default function MeetingRoom() {
   const { meetingId } = useParams()
   const navigate = useNavigate()
 
-  // SAFETY CHECK - this was crashing your app
+    // Get meeting ID from URL
+  const displayId = meetingId || window.location.pathname.split('/').pop() || 'test-room';
+
   if (!meetingId) {
-    return (
-      <div style={{padding: '40px', textAlign: 'center'}}>
-        <h2>No Meeting ID Found</h2>
-        <p>Please go back and click "Create Meeting"</p>
-        <button 
-          onClick={() => navigate('/')} 
-          style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer'}}
-        >
-          Go to Home
-        </button>
-      </div>
-    )
+    console.log('URL ID:', window.location.pathname);
   }
 
   const { 
@@ -32,13 +23,13 @@ export default function MeetingRoom() {
 
   useEffect(() => {
     // Join the room when component loads
-    joinRoom(meetingId)
+    joinRoom(displayId)
 
     // Leave room when component unmounts
     return () => {
       leaveRoom()
     }
-  }, [meetingId, joinRoom, leaveRoom])
+  }, [displayId, joinRoom, leaveRoom])
 
   if (!isConnected) {
     return <div style={{padding: '40px', textAlign: 'center'}}>Connecting to meeting {meetingId}...</div>
