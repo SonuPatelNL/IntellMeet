@@ -1,63 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useWebRTC } from '../hooks/useWebRTC';
 import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
-export default function MeetingRoom() {
-  const { meetingId } = useParams() as any;
-  const id = meetingId || 'test-room';
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [muted, setMuted] = useState(false);
-  const [videoOff, setVideoOff] = useState(false);
+export default function MeetingRoom(){
+  const { meetingId } = useParams();
+  const { localVideoRef, remoteVideos, joinRoom, toggleAudio, toggleVideo, isAudioEnabled, isVideoEnabled, isConnected } = useWebRTC({meetingId: meetingId!});
 
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then(s => {
-        setStream(s);
-        if (videoRef.current) videoRef.current.srcObject = s;
-      })
-      .catch(err => {
-        alert("Camera blocked! Click lock icon in address bar -> Allow Camera & Mic -> Refresh");
-        console.error(err);
-      });
-  }, []);
-
-  const toggleMute = () => {
-    if (!stream) return;
-    stream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
-    setMuted(!muted);
-  };
-
-  const toggleVideo = () => {
-    if (!stream) return;
-    stream.getVideoTracks().forEach(t => t.enabled = !t.enabled);
-    setVideoOff(!videoOff);
-  };
+  useEffect(()=>{ joinRoom(meetingId!); }, [meetingId]);
 
   return (
-    <div style={{minHeight:'100vh', background:'#111', color:'#fff', padding:20, fontFamily:'sans-serif'}}>
-      <h1>IntelliMeet - {id}</h1>
-      <div style={{width:400, height:300, background:'#000', borderRadius:16, overflow:'hidden', position:'relative', marginTop:20}}>
-        <video ref={videoRef} autoPlay muted playsInline style={{width:'100%', height:'100%', objectFit:'cover'}} />
-        {videoOff && <div style={{position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', background:'#000'}}>📷 Video Off</div>}
-        <span style={{position:'absolute', bottom:8, left:8, background:'rgba(0,0,0,0.7)', padding:'4px 8px', borderRadius:6, fontSize:12}}>You {muted ? '🔇' : '🎤'}</span>
+    <div style={{background:'#111', minHeight:'100vh', padding:20, color:'#fff'}}>
+      <h2>Room: {meetingId} {isConnected?'🟢':'🔴'}</h2>
+      <div style={{display:'flex', gap:10, flexWrap:'wrap'}}>
+        <video ref={localVideoRef} autoPlay muted playsInline style={{width:400, height:300, background:'#000', borderRadius:12}} />
+        {Array.from(remoteVideos.values()).map((s:any,i)=>
+          <video key={i} autoPlay playsInline ref={(el:any)=>{if(el) el.srcObject=s}} style={{width:400, height:300, background:'#222', borderRadius:12}} />
+        )}
       </div>
-
-      <div style={{marginTop:20, display:'flex', gap:10}}>
-        <button onClick={toggleMute} style={{padding:'12px 24px', borderRadius:24, border:0, background: muted ? '#e53e3e' : '#2d2d2d', color:'#fff', cursor:'pointer', fontSize:14, fontWeight:'bold'}}>
-          {muted ? '🔇 Unmute' : '🎤 Mute'}
-        </button>
-        <button onClick={toggleVideo} style={{padding:'12px 24px', borderRadius:24, border:0, background: videoOff ? '#e53e3e' : '#2d2d2d', color:'#fff', cursor:'pointer', fontSize:14, fontWeight:'bold'}}>
-          {videoOff ? '📷 Video On' : '📹 Video Off'}
-        </button>
-        <button onClick={()=> window.location.href='/'} style={{padding:'12px 24px', borderRadius:24, border:0, background:'#e53e3e', color:'#fff', cursor:'pointer', fontSize:14, fontWeight:'bold'}}>
-          Leave
-        </button>
+      <div style={{marginTop:15, display:'flex', gap:10}}>
+        <button onClick={()=>toggleAudio()} style={{padding:'10px 20px', borderRadius:20}}>{isAudioEnabled?'Mute':'Unmute'}</button>
+        <button onClick={()=>toggleVideo()} style={{padding:'10px 20px', borderRadius:20}}>{isVideoEnabled?'Cam Off':'Cam On'}</button>
+        <button onClick={()=>window.location.href='/'} style={{padding:'10px 20px', background:'red', color:'#fff', borderRadius:20}}>Leave</button>
       </div>
-
-      <p style={{marginTop:20, color:'#888', fontSize:13, lineHeight:1.5}}>
-        ✅ If video is black: Click 🔒 icon in address bar (left side) → Site Settings → Allow Camera + Mic → Refresh<br/>
-        ✅ Buttons will turn RED when clicked
-      </p>
+      <p style={{color:'#aaa', marginTop:10}}>{remoteVideos.size===0?'Waiting for other person to join same link...':'✅ Connected! '+ (remoteVideos.size+1)+' people'}</p>
     </div>
-  );
+  )
 }
