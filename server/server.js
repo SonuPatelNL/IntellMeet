@@ -1,53 +1,45 @@
-const { Server } = require("socket.io");
+const express = require("express");
 const http = require("http");
+const { Server } = require("socket.io");
+const cors = require("cors");
 
-const PORT = process.env.PORT || 5176;
+const app = express();
+app.use(cors());
 
-// Create http server for Render
-const httpServer = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain", "Access-Control-Allow-Origin": "*" });
-  res.end("IntelliMeet Socket Running! Room: " + (req.url || ""));
-});
-
-const io = new Server(httpServer, {
+const server = http.createServer(app);
+const io = new Server(server, {
   cors: {
-    origin: "*", // ALLOW VERCEL!
-    methods: ["GET", "POST"],
-    credentials: true
-  },
-  transports: ["websocket", "polling"]
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
 });
 
-console.log(`Socket server starting on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("IntelliMeet Socket Running! Room: /");
+});
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
-    console.log(`User ${socket.id} JOINING ROOM ${roomId}`);
+    console.log(`${socket.id} joined ${roomId}`);
+    // Tell others in room that someone joined
     socket.to(roomId).emit("user-joined", socket.id);
   });
 
-  // Old signal handler (for old frontend)
-  socket.on("signal", ({ to, data }) => {
-    console.log(`Signal from ${socket.id} to ${to}`);
-    io.to(to).emit("signal", { from: socket.id, data });
+  socket.on("offer", ({ roomId, offer }) => {
+    console.log(`Offer from ${socket.id} to room ${roomId}`);
+    socket.to(roomId).emit("offer", { offer, from: socket.id });
   });
 
-  // NEW handlers for 2-person (for my new frontend)
-  socket.on("offer", (data) => {
-    console.log(`Offer from ${socket.id} to ${data.to}`);
-    io.to(data.to).emit("offer", { offer: data.offer, from: socket.id });
+  socket.on("answer", ({ roomId, answer }) => {
+    console.log(`Answer from ${socket.id} to room ${roomId}`);
+    socket.to(roomId).emit("answer", { answer, from: socket.id });
   });
 
-  socket.on("answer", (data) => {
-    console.log(`Answer from ${socket.id} to ${data.to}`);
-    io.to(data.to).emit("answer", { answer: data.answer, from: socket.id });
-  });
-
-  socket.on("ice-candidate", (data) => {
-    socket.to(data.roomId).emit("ice-candidate", { candidate: data.candidate, from: socket.id });
+  socket.on("ice-candidate", ({ roomId, candidate }) => {
+    socket.to(roomId).emit("ice-candidate", { candidate, from: socket.id });
   });
 
   socket.on("disconnect", () => {
@@ -55,6 +47,7 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`✅ Socket server running on port ${PORT}`);
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+  console.log(`Socket server running on port ${PORT}`);
 });
