@@ -1,40 +1,29 @@
 import { io, Socket } from 'socket.io-client';
 
-const socketBaseUrl = (import.meta as ImportMeta & { env?: Record<string, string | boolean | undefined> }).env?.VITE_API_URL;
-const SOCKET_URL = typeof socketBaseUrl === 'string' ? socketBaseUrl : 'http://localhost:5176';
+const socketBaseUrl = (import.meta as any).env?.VITE_SOCKET_URL || (import.meta as any).env?.VITE_BACKEND_URL || (import.meta as any).env?.VITE_API_URL || 'https://intellmeet-1-8a0d.onrender.com';
+
+const SOCKET_URL = typeof socketBaseUrl === 'string' ? socketBaseUrl.replace(/\/api\/?$/, '') : 'https://intellmeet-1-8a0d.onrender.com';
 
 let socket: Socket | null = null;
 
-/**
- * Initialises a singleton Socket.io connection.
- * Call once on app mount after authentication.
- */
 export const connectSocket = (token?: string): Socket => {
   if (socket?.connected) return socket;
 
+  console.log('Connecting socket to:', SOCKET_URL);
+
   socket = io(SOCKET_URL, {
-    withCredentials: true,           // Send httpOnly cookies
-    auth: token ? { token } : {},    // Fallback: send token in auth payload
+    withCredentials: true,
+    auth: token ? { token } : {},
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
-    transports: ['websocket'],
-  });
-
-  socket.on('connect', () => {
-    console.log('[Socket] Connected:', socket?.id);
-  });
-
-  socket.on('disconnect', (reason) => {
-    console.warn('[Socket] Disconnected:', reason);
-  });
-
-  socket.on('connect_error', (err) => {
-    console.error('[Socket] Connection error:', err.message);
+    transports: ['websocket', 'polling']
   });
 
   return socket;
 };
+
+export const getSocket = (): Socket | null => socket;
 
 export const disconnectSocket = () => {
   if (socket) {
@@ -43,7 +32,4 @@ export const disconnectSocket = () => {
   }
 };
 
-export const getSocket = (): Socket => {
-  if (!socket) throw new Error('Socket not initialised. Call connectSocket() first.');
-  return socket;
-};
+export { socket, SOCKET_URL };
