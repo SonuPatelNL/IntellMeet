@@ -71,6 +71,7 @@ demo-room-1, demo-room-2 with password 1234
 ## 📡 API Docs
 
 Base URL: `http://localhost:5000/api`
+Live: `https://intellmeet-1-8c0f.onrender.com`
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
